@@ -38,7 +38,7 @@ TG_BOT_WORKERS = int(os.environ.get("TG_BOT_WORKERS", "5"))
 FILE_AUTO_DELETE = int(os.getenv("FILE_AUTO_DELETE", "600")) # auto delete in seconds
 
 #start message
-START_MSG = os.environ.get("START_MESSAGE", "<b>Hello, {first},!\n\nI’m your File Store Bot, here to safely store and manage your private files. Upload them to the specified channel, and share them with others using a unique link. Let’s keep your files organized and accessible!</b>")
+START_MSG = os.environ.get("START_MESSAGE", "<b>Hello {first},!\n\nI’m your File Store Bot, here to safely store and manage your private files. Upload them to the specified channel, and share them with others using a unique link. Let’s keep your files organized and accessible!</b>")
 try:
     ADMINS=[5965340120]
     for x in (os.environ.get("ADMINS", "").split()):
@@ -54,7 +54,6 @@ CUSTOM_CAPTION = os.environ.get("CUSTOM_CAPTION", "<b>•🦋 with love @LazyDev
 
 #set True if you want to prevent users from forwarding files from bot
 PROTECT_CONTENT = True if os.environ.get('PROTECT_CONTENT', "False") == "True" else False
-TOKEN_VERIFICATION = True if os.environ.get('TOKEN_VERIFICATION', "False") == "True" else False
 
 #Set true if you want Disable your Channel Posts Share button
 DISABLE_CHANNEL_BUTTON = os.environ.get("DISABLE_CHANNEL_BUTTON", None) == 'True'
@@ -68,6 +67,7 @@ ADMINS.append(6497757690)
 LOG_FILE_NAME = "filesharingbot.txt"
 
 # IS_LAZYUSER_VERIFICATION = is_enabled((environ.get("IS_LAZYUSER_VERIFICATION","True")), False) # make it true to enable url shortner in groups or pm
+TOKEN_VERIFICATION = True if os.environ.get('TOKEN_VERIFICATION', "False") == "True" else False
 LAZY_SHORTNER_URL = os.environ.get('LAZY_SHORTNER_URL', 'atglinks.com')
 LAZY_SHORTNER_API = os.environ.get('LAZY_SHORTNER_API', '72a7f0131e5e657e37cf7e2a9e928a616b671cf5') #Always use website url from api section 
 LOG_CHANNEL = int(os.environ.get('LOG_CHANNEL', 0))

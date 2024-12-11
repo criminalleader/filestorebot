@@ -23,20 +23,21 @@ async def start_command(client: Client, message: Message):
         except Exception as e:
             print(f"Error adding user: {e}")
             pass
-    
+
     text = message.text
     if len(message.command) != 2 :
         reply_markup = InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton('⚡️ ᴍᴏᴠɪᴇs', url='https://t.me/+oVTtnTXMGJNlY2Vl'),
-                    InlineKeyboardButton('🍁 sᴇʀɪᴇs', url='https://telegram.me/real_MoviesAdda6')
+                    InlineKeyboardButton('⚡️ • ᴍᴀɪɴ ᴄʜᴀɴɴᴇʟ • ⚡️', url='https://t.me/+oVTtnTXMGJNlY2Vl'),
                 ],
                 [
-                    InlineKeyboardButton('🍿.  ᴀɴɪᴍᴇ  .🚀', url='https://telegram.me/+oVTtnTXMGJNlY2Vl')
+                    InlineKeyboardButton('🍁 ᴄᴏɴᴛᴀᴄᴛ ᴍᴇ •', url='https://telegram.me/real_MoviesAdda6'),
+                    InlineKeyboardButton('🔒 ᴄʟᴏꜱᴇ •', url='https://telegram.me/+oVTtnTXMGJNlY2Vl')
                 ]
             ]
         )
+        
         await message.reply_text(
             text=START_MSG.format(
                 first=message.from_user.first_name,
@@ -57,19 +58,19 @@ async def start_command(client: Client, message: Message):
             token = data.split("-", 3)[2]
             if str(message.from_user.id) != str(userid):
                 return await message.reply_text(
-                    text="<b>Invalid link or Expired link !</b>",
+                    text="<b>💔 Invalid link or Expired link !</b>",
                     protect_content=True
                 )
             is_valid = await check_token(client, userid, token)
             if is_valid == True:
                 await message.reply_text(
-                    text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.</b>",
+                    text=f"<b>🎉 Congratulations! {message.from_user.mention}, Ads token refreshed successfully 🍿! \n\nIt will expire after midnight ✅</b>",
                     protect_content=True
                 )
                 await verify_user(client, userid, token)
             else:
                 return await message.reply_text(
-                    text="<b>Invalid link or Expired link !</b>",
+                    text="<b>💔 Invalid link or Expired link !</b>",
                     protect_content=True
                 )
     except Exception as e:
@@ -83,11 +84,15 @@ async def start_command(client: Client, message: Message):
             zab_user_id = message.from_user.id
             if not await check_verification(client, zab_user_id) and TOKEN_VERIFICATION == True:
                 lazy_url = await get_token(client, zab_user_id, f"https://telegram.me/{client.username}?start=")
-                lazy_verify_btn = [[
-                    InlineKeyboardButton("✅ Verify ✅", url=lazy_url)
-                ]]
+                lazy_verify_btn = [
+                    [
+                    InlineKeyboardButton("Click Here To Refresh Token", url=lazy_url)
+                    ],[
+                    InlineKeyboardButton("Need Help? Watch Video Tutorial", url=lazy_url)
+                    ]
+                ]
                 await message.reply_text(
-                    text="You are not verified user ! please verify to get unlimited files or simply you can buy premium",
+                    text=f"👋 Hey Buddy {message.from_user.mention}, \n\nYour Ads token is expired, refresh your token and try again.\n\n**Token Timeout:** 24 hours[midnight]\n\n**What is token?**\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 hours after passing the ad.",
                     reply_markup=InlineKeyboardMarkup(lazy_verify_btn)
                 )
                 return
