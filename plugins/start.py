@@ -9,6 +9,7 @@ from helper_func import subscribed, encode, decode, get_messages
 from database.database import add_user, del_user, full_userbase, present_user
 logger = logging.getLogger(__name__)
 from utils import check_verification, get_token, verify_user, check_token
+from pyrogram import enums
 
 neha_delete_time = FILE_AUTO_DELETE
 neha = neha_delete_time
@@ -17,6 +18,7 @@ file_auto_delete = humanize.naturaldelta(neha)
 @Bot.on_message(filters.command('start') & filters.private & subscribed)
 async def start_command(client: Client, message: Message):
     id = message.from_user.id
+    await message.reply_chat_action(enums.ChatAction.TYPING)
     if not await present_user(id):
         try:
             await add_user(id)
@@ -26,6 +28,7 @@ async def start_command(client: Client, message: Message):
 
     text = message.text
     if len(message.command) != 2 :
+        await message.reply_chat_action(enums.ChatAction.TYPING)
         reply_markup = InlineKeyboardMarkup(
             [
                 [
@@ -33,11 +36,11 @@ async def start_command(client: Client, message: Message):
                 ],
                 [
                     InlineKeyboardButton('🍁 ᴄᴏɴᴛᴀᴄᴛ ᴍᴇ •', url='https://telegram.me/real_MoviesAdda6'),
-                    InlineKeyboardButton('🔒 ᴄʟᴏꜱᴇ •', url='https://telegram.me/+oVTtnTXMGJNlY2Vl')
+                    InlineKeyboardButton('🔒 ᴄʟᴏꜱᴇ •', callback_data="close")
                 ]
             ]
         )
-        
+
         await message.reply_text(
             text=START_MSG.format(
                 first=message.from_user.first_name,
@@ -54,6 +57,7 @@ async def start_command(client: Client, message: Message):
     try:
         data = message.command[1]
         if data.split("-", 1)[0] == "verify":
+            await message.reply_chat_action(enums.ChatAction.TYPING)
             userid = data.split("-", 2)[1]
             token = data.split("-", 3)[2]
             if str(message.from_user.id) != str(userid):
@@ -83,6 +87,7 @@ async def start_command(client: Client, message: Message):
             # print('A user hit this case....')
             zab_user_id = message.from_user.id
             if not await check_verification(client, zab_user_id) and TOKEN_VERIFICATION == True:
+                await message.reply_chat_action(enums.ChatAction.TYPING)
                 lazy_url = await get_token(client, zab_user_id, f"https://telegram.me/{client.username}?start=")
                 lazy_verify_btn = [
                     [
@@ -92,7 +97,7 @@ async def start_command(client: Client, message: Message):
                     ]
                 ]
                 await message.reply_text(
-                    text=f"👋 Hey Buddy {message.from_user.mention}, \n\nYour Ads token is expired, refresh your token and try again.\n\n**Token Timeout:** 24 hours[midnight]\n\n**What is token?**\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 hours after passing the ad.",
+                    text=f"👋 Hey Buddy {message.from_user.mention}, \n\nYour Ads token is expired, refresh your token and try again.\n\n<b>Token Timeout:</b> 24 hours[midnight]\n\n<b>What is token?</b>\nThis is an ads token. If you pass 1 ad, you can use the bot for 24 hours after passing the ad.",
                     reply_markup=InlineKeyboardMarkup(lazy_verify_btn)
                 )
                 return
@@ -116,7 +121,7 @@ async def start_command(client: Client, message: Message):
             except Exception as e:
                 print(f"Error decoding IDs: {e}")
                 return
-            
+
         elif len(argument) == 2:
             try:
                 ids = [int(int(argument[1]) / abs(client.db_channel.id))]
@@ -136,6 +141,7 @@ async def start_command(client: Client, message: Message):
 
         lazy_msgs = []  # List to keep track of sent messages
 
+        await message.reply_chat_action(enums.ChatAction.TYPING)
         for msg in messages:
             caption = (CUSTOM_CAPTION.format(previouscaption="" if not msg.caption else msg.caption.html, 
                                              filename=msg.document.file_name) if bool(CUSTOM_CAPTION) and bool(msg.document)
@@ -144,18 +150,20 @@ async def start_command(client: Client, message: Message):
             reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
 
             try:
+                await message.reply_chat_action(enums.ChatAction.UPLOAD_DOCUMENT)
                 copied_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, 
                                             reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                 lazy_msgs.append(copied_msg)
             except FloodWait as e:
                 await asyncio.sleep(e.x)
+                await message.reply_chat_action(enums.ChatAction.UPLOAD_DOCUMENT)
                 copied_msg = await msg.copy(chat_id=message.from_user.id, caption=caption, parse_mode=ParseMode.HTML, 
                                             reply_markup=reply_markup, protect_content=PROTECT_CONTENT)
                 lazy_msgs.append(copied_msg)
             except Exception as e:
                 print(f"Failed to send message: {e}")
                 pass
-
+        await message.reply_chat_action(enums.ChatAction.TYPING)
         k = await client.send_message(chat_id=message.from_user.id, 
                                       text=f"<b><i>This File is deleting automatically in {file_auto_delete}. Forward in your Saved Messages..!</i></b>")
 
@@ -190,7 +198,7 @@ async def not_joined(client: Client, message: Message):
         )
     except IndexError:
         pass
-
+    await message.reply_chat_action(enums.ChatAction.TYPING)
     await message.reply(
         text=FORCE_MSG.format(
             first=message.from_user.first_name,
@@ -206,6 +214,7 @@ async def not_joined(client: Client, message: Message):
 
 @Bot.on_message(filters.command('users') & filters.private & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
+    await message.reply_chat_action(enums.ChatAction.TYPING)
     msg = await client.send_message(chat_id=message.chat.id, text=f"Processing...")
     users = await full_userbase()
     await msg.edit(f"{len(users)} Users Are Using This Bot")
@@ -213,6 +222,7 @@ async def get_users(client: Bot, message: Message):
 @Bot.on_message(filters.private & filters.command('broadcast') & filters.user(ADMINS))
 async def send_text(client: Bot, message: Message):
     if message.reply_to_message:
+        await message.reply_chat_action(enums.ChatAction.TYPING)
         query = await full_userbase()
         broadcast_msg = message.reply_to_message
         total = 0
@@ -253,6 +263,7 @@ async def send_text(client: Bot, message: Message):
         return await pls_wait.edit(status)
 
     else:
+        await message.reply_chat_action(enums.ChatAction.TYPING)
         msg = await message.reply(f"Use This Command As A Reply To Any Telegram Message Without Any Spaces.")
         await asyncio.sleep(8)
         await msg.delete()
@@ -269,7 +280,6 @@ async def delete_files(messages, client, k):
 
     # Safeguard against k.command being None or having insufficient parts
     command_part = k.command[1] if k.command and len(k.command) > 1 else None
-
     if command_part:
         button_url = f"https://t.me/{client.username}?start={command_part}"
         keyboard = InlineKeyboardMarkup(
@@ -281,4 +291,5 @@ async def delete_files(messages, client, k):
         keyboard = None
 
     # Edit message with the button
+    await k.reply_chat_action(enums.ChatAction.TYPING)
     await k.edit_text("<b><i>Your Video / File Is Successfully Deleted ✅</i></b>", reply_markup=keyboard)

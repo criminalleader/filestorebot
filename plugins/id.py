@@ -8,7 +8,7 @@ from bot import Bot
 @Bot.on_message(filters.command("id") & filters.private)
 async def showid(client, message):
     chat_type = message.chat.type
-
+    await message.reply_chat_action(enums.ChatAction.TYPING)
     if chat_type == enums.ChatType.PRIVATE:
         user_id = message.chat.id
         await message.reply_text(
