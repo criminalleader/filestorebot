@@ -25,29 +25,57 @@ async def start_command(client: Client, message: Message):
             pass
     
     text = message.text
-
-    data = message.command[1]
-    if data.split("-", 1)[0] == "verify":
-        userid = data.split("-", 2)[1]
-        token = data.split("-", 3)[2]
-        if str(message.from_user.id) != str(userid):
-            return await message.reply_text(
-                text="<b>Invalid link or Expired link !</b>",
-                protect_content=True
-            )
-        is_valid = await check_token(client, userid, token)
-        if is_valid == True:
-            await message.reply_text(
-                text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.</b>",
-                protect_content=True
-            )
-            await verify_user(client, userid, token)
-        else:
-            return await message.reply_text(
-                text="<b>Invalid link or Expired link !</b>",
-                protect_content=True
-            )
-        
+    if len(message.command) != 2 :
+        reply_markup = InlineKeyboardMarkup(
+            [
+                [
+                    InlineKeyboardButton('⚡️ ᴍᴏᴠɪᴇs', url='https://t.me/+oVTtnTXMGJNlY2Vl'),
+                    InlineKeyboardButton('🍁 sᴇʀɪᴇs', url='https://telegram.me/real_MoviesAdda6')
+                ],
+                [
+                    InlineKeyboardButton('🍿.  ᴀɴɪᴍᴇ  .🚀', url='https://telegram.me/+oVTtnTXMGJNlY2Vl')
+                ]
+            ]
+        )
+        await message.reply_text(
+            text=START_MSG.format(
+                first=message.from_user.first_name,
+                last=message.from_user.last_name,
+                username=None if not message.from_user.username else '@' + message.from_user.username,
+                mention=message.from_user.mention,
+                id=message.from_user.id
+            ),
+            reply_markup=reply_markup,
+            disable_web_page_preview=True,
+            quote=True
+        )
+        return
+    try:
+        data = message.command[1]
+        if data.split("-", 1)[0] == "verify":
+            userid = data.split("-", 2)[1]
+            token = data.split("-", 3)[2]
+            if str(message.from_user.id) != str(userid):
+                return await message.reply_text(
+                    text="<b>Invalid link or Expired link !</b>",
+                    protect_content=True
+                )
+            is_valid = await check_token(client, userid, token)
+            if is_valid == True:
+                await message.reply_text(
+                    text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.</b>",
+                    protect_content=True
+                )
+                await verify_user(client, userid, token)
+            else:
+                return await message.reply_text(
+                    text="<b>Invalid link or Expired link !</b>",
+                    protect_content=True
+                )
+    except Exception as e:
+        print("Not virification link")
+        pass
+     
     if len(text) > 7:
         # check verfication start
         try:
@@ -130,31 +158,7 @@ async def start_command(client: Client, message: Message):
         asyncio.create_task(delete_files(lazy_msgs, client, k))
 
         return
-    else:
-        reply_markup = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton('⚡️ ᴍᴏᴠɪᴇs', url='https://t.me/+oVTtnTXMGJNlY2Vl'),
-                    InlineKeyboardButton('🍁 sᴇʀɪᴇs', url='https://telegram.me/real_MoviesAdda6')
-                ],
-                [
-                    InlineKeyboardButton('🍿.  ᴀɴɪᴍᴇ  .🚀', url='https://telegram.me/+oVTtnTXMGJNlY2Vl')
-                ]
-            ]
-        )
-        await message.reply_text(
-            text=START_MSG.format(
-                first=message.from_user.first_name,
-                last=message.from_user.last_name,
-                username=None if not message.from_user.username else '@' + message.from_user.username,
-                mention=message.from_user.mention,
-                id=message.from_user.id
-            ),
-            reply_markup=reply_markup,
-            disable_web_page_preview=True,
-            quote=True
-        )
-        return
+
 
 @Bot.on_message(filters.command('start') & filters.private)
 async def not_joined(client: Client, message: Message):
