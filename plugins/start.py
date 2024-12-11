@@ -74,12 +74,12 @@ async def start_command(client: Client, message: Message):
                 )
     except Exception as e:
         print("Not virification link")
-        pass
-     
+        return
+
     if len(text) > 7:
         # check verfication start
         try:
-            print('A user hit this case....')
+            # print('A user hit this case....')
             zab_user_id = message.from_user.id
             if not await check_verification(client, zab_user_id) and TOKEN_VERIFICATION == True:
                 lazy_url = await get_token(client, zab_user_id, f"https://telegram.me/{client.username}?start=")
